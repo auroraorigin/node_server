@@ -1,7 +1,5 @@
 // 引入mongoose模块
 const mongoose = require('mongoose');
-// 导入bcrypt模块
-const bcrypt = require('bcrypt');
 // 引入joi模块
 const Joi = require('joi');
 
@@ -27,7 +25,8 @@ const adminSchema = new mongoose.Schema({
         type: String
     },
     role: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'role',
     },
     state: {
         type: Boolean,
@@ -38,6 +37,11 @@ const adminSchema = new mongoose.Schema({
 
 // 创建管理员集合
 const Admin = mongoose.model('admin', adminSchema);
+
+// 创建测试管理员
+/*
+// 导入bcrypt模块
+const bcrypt = require('bcrypt');
 
 async function createAdmin() {
     const salt = await bcrypt.genSalt(10);
@@ -51,13 +55,14 @@ async function createAdmin() {
         state: true
     });
 }
+createAdmin();
+*/
 
-//createAdmin();
 
 // 验证管理员信息
 const validateAdmin = admin => {
     const schema = {
-        _id: Joi.string().regex(/^[0-9a-f]{24}$/).error(new Error('id不符合要求')),
+        _id: Joi.string().regex(/^[0-9a-f]{24}$/).error(new Error('_id不符合要求')),
         name: Joi.string().min(2).max(20).error(new Error('用户名不符合要求')),
         email: Joi.string().email().error(new Error('邮箱格式不符合要求')),
         password: Joi.string().regex(/^[a-zA-Z0-9]{6,20}$/).error(new Error('密码格式不符合要求')),

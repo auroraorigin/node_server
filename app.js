@@ -1,7 +1,5 @@
 // 导入expess框架
 const express = require('express');
-// 导入path模块
-const path = require('path');
 // 导入body-parser模块
 const bodyPaser = require('body-parser');
 
@@ -9,7 +7,9 @@ const bodyPaser = require('body-parser');
 const app = express();
 
 // 处理post请求参数
-app.use(bodyPaser.urlencoded({extended: false}));
+app.use(bodyPaser.urlencoded({
+	extended: false
+}));
 
 // 数据库连接
 require('./model/connect');
@@ -23,7 +23,7 @@ app.use('/wx', wx);
 app.use('/admin', admin);
 
 app.use((err, req, res, next) => {
-	res.json(400, null)
+	res.json(404, null)
 })
 
 // 监听端口

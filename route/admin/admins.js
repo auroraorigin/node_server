@@ -29,7 +29,10 @@ router.get('/', async (req, res) => {
     // 判断查询条件
     if (!query) {
         // 获取管理员数据列表
-        response.data = await Admin.find().skip((pagenum - 1) * pagesize).limit(Number(pagesize));
+        response.data = await Admin.find({}, {
+            password: 0,
+            __v: 0
+        }).populate('role', 'name').skip((pagenum - 1) * pagesize).limit(Number(pagesize));
 
         // 获取管理员数据总数
         response.totalpage = await Admin.estimatedDocumentCount()
@@ -52,7 +55,10 @@ router.get('/', async (req, res) => {
                     }
                 }
             ]
-        }).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
+        }, {
+            password: 0,
+            __v: 0
+        }).populate('role', 'name').skip((pagenum - 1) * pagesize).limit(Number(pagesize))
 
         // 获取与查询信息相关的管理员数据总数
         response.totalpage = await Admin.find({
@@ -187,8 +193,23 @@ router.delete("/:_id", async (req, res) => {
         _id: req.params
     })
 
-    res.json(200, null)
+    res.json(204, null)
 
+})
+
+// 分配管理员角色
+router.put("/:_id/role", async (req, res) => {
+    try {
+        await Admin.updateOne({
+            _id: req.params._id
+        }, {
+            role: req.body.rid
+        })
+    } catch (error) {
+        return res.json(400, null)
+    }
+
+    res.json(200, null)
 })
 
 module.exports = router;

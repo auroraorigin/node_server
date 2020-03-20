@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
         return res.json(400, null)
     }
 
-    // 判断用户账号密码是否正确
+    // 判断用户账号是否存在
     let admin = await Admin.findOne({
         name
     })
@@ -40,8 +40,8 @@ module.exports = async (req, res) => {
             }
             const secretOrKey = keys.secretOrKey;
             const token = jwt.sign(payload, secretOrKey, {
-                // 有效期一小时
-                expiresIn: 60 * 60
+                // 有效期一天
+                expiresIn: 60 * 60 * 24
             })
             return res.json(200, token)
         }
