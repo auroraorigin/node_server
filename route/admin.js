@@ -21,5 +21,8 @@ admin.get('/rights/:type', require("./admin/rights"));
 // 角色管理模块
 admin.use('/roles', require("./admin/roles"));
 
+// 商品分类模块
+admin.use('/categories', require("./admin/categories"));
+
 // 将路由对象作为模块成员进行导出
 module.exports = admin;
