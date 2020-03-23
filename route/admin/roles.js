@@ -137,7 +137,7 @@ router.put('/:_id', async (req, res) => {
     } catch (error) {
         return res.json(400, null)
     }
-    
+
 
     res.json(200, null)
 })
@@ -222,4 +222,19 @@ router.delete('/:roleId/rights/:rightId', async (req, res) => {
     res.json(204, null)
 })
 
+// 根据ID查询角色
+router.get('/:_id', async (req, res) => {
+    var data
+    try {
+        data = await Role.findOne({
+            _id: req.params._id
+        }, {
+            __v: 0,
+            children:0
+        })
+    } catch (error) {
+        res.json(400, null)
+    }
+    res.json(200, data)
+})
 module.exports = router;

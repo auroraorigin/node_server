@@ -212,4 +212,20 @@ router.put("/:_id/role", async (req, res) => {
     res.json(200, null)
 })
 
+// 根据ID查询管理员
+router.get("/:_id", async (req, res) => {
+    var data
+    try {
+        data = await Admin.findOne({
+            _id: req.params._id
+        }, {
+            password: 0,
+            __v: 0
+        }).populate('role','name')
+    } catch (error) {
+        res.json(400, null)
+    }
+    res.json(200, data)
+})
+
 module.exports = router;

@@ -24,5 +24,11 @@ admin.use('/roles', require("./admin/roles"));
 // 商品分类模块
 admin.use('/categories', require("./admin/categories"));
 
+// 商品管理模块
+admin.use('/goods', require("./admin/goods"));
+
+// 图片上传
+admin.post('/upload',require("./admin/upload"))
+
 // 将路由对象作为模块成员进行导出
 module.exports = admin;
