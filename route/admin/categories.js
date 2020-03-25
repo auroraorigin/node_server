@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         const data = await Category.find({}, {
             __v: 0
         })
-        return res.json(200, data)
+        return res.sendResult(data, 200, '获取商品列表成功')
 
     } else if (pagenum && pagesize) {
         let response = {}
@@ -28,36 +28,37 @@ router.get('/', async (req, res) => {
         // 获取商品分类数据总数
         response.totalpage = await Category.estimatedDocumentCount()
 
-        return res.json(200, response)
+        return res.sendResult(response, 200, '获取商品列表成功')
     }
 
-    res.json(400, null)
+    res.sendResult(null, 400, '获取商品列表失败')
 })
 
 // 添加商品分类
 router.post('/', async (req, res) => {
     const {
         name
-    } = req.query
+    } = req.body
 
     if (!name)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
+
 
     try {
         await Category.create({
             name
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '分类名称已存在')
     }
 
-    res.json(201, null)
+    res.sendResult(null, 201, '添加成功')
 })
 
 // 修改商品分类名称
 router.put('/:_id', async (req, res) => {
     const _id = req.params._id
-    const name = req.query.name
+    const name = req.body.name
 
     try {
         await Category.updateOne({
@@ -65,9 +66,9 @@ router.put('/:_id', async (req, res) => {
         }, {
             name
         })
-        res.json(200, null)
+        res.sendResult(null,200,'修改成功')
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null,400,'分类名称已存在')
     }
 })
 
@@ -79,10 +80,25 @@ router.delete('/:_id', async (req, res) => {
         await Category.findOneAndDelete({
             _id
         })
-        res.json(204, null)
+
+        res.sendResult(null,204,'删除成功')
     } catch (error) {
-        res.json(400, null)
+        res.sendResult(null,400,'参数不合法')
     }
+})
+
+// 根据ID查询商品分类
+router.get('/:_id', async (req, res) => {
+    var data
+    try {
+        data = await Category.findOne({
+            _id: req.params._id
+        })
+    } catch (error) {
+        res.sendResult(null, 400, '参数不合法')
+    }
+    
+    res.sendResult(data, 200, '查询成功')
 })
 
 // 将路由对象作为模块成员进行导出

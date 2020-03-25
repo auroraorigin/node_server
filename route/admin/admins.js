@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
     // 判断参数是否合法
     if (!pagenum || !pagesize || pagenum < 1)
-        return res.json(400, null)
+        return res.sendResult(null, 400)
 
     let response = {}
     // 判断查询条件
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         }).countDocuments()
     }
 
-    res.json(200, response)
+    res.sendResult(response, 200)
 });
 
 // 添加管理员
@@ -96,13 +96,13 @@ router.post('/', async (req, res) => {
 
     // 判断参数是否存在
     if (!name || !password)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
 
     // 判断参数是否合法
     try {
         await validateAdmin(req.body)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     const verify = await Admin.findOne({
@@ -110,7 +110,7 @@ router.post('/', async (req, res) => {
     })
 
     if (verify)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '管理员名称已存在')
 
     // 对管理员密码进行加密 && 添加新管理员
     const salt = await bcrypt.genSalt(10);
@@ -122,7 +122,7 @@ router.post('/', async (req, res) => {
         email,
         mobile
     })
-    res.json(201, null)
+    res.sendResult(null, 201, '添加管理员成功')
 })
 
 // 修改管理员状态
@@ -132,7 +132,7 @@ router.put("/:_id/state/:state", async (req, res) => {
     try {
         await validateAdmin(req.params)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     //修改管理员状态
@@ -143,9 +143,9 @@ router.put("/:_id/state/:state", async (req, res) => {
     })
 
     if (!verify.n)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
 
-    res.json(200, null)
+    res.sendResult(null, 200, '修改管理员状态成功')
 })
 
 // 修改管理员信息
@@ -153,15 +153,15 @@ router.put("/:_id", async (req, res) => {
 
     const data = {
         _id: req.params._id,
-        email: req.query.email,
-        mobile: req.query.mobile
+        email: req.body.email,
+        mobile: req.body.mobile
     }
 
     // 判断参数是否合法
     try {
         await validateAdmin(data)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     // 修改管理员信息
@@ -173,9 +173,9 @@ router.put("/:_id", async (req, res) => {
     })
 
     if (!verify.n)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '修改失败')
 
-    res.json(200, null)
+    res.sendResult(null, 200, '修改成功')
 })
 
 // 删除管理员
@@ -185,7 +185,7 @@ router.delete("/:_id", async (req, res) => {
     try {
         await validateAdmin(req.params)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     // 删除管理员
@@ -193,7 +193,7 @@ router.delete("/:_id", async (req, res) => {
         _id: req.params
     })
 
-    res.json(204, null)
+    res.sendResult(null, 204, '删除成功')
 
 })
 
@@ -206,10 +206,10 @@ router.put("/:_id/role", async (req, res) => {
             role: req.body.rid
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
-    res.json(200, null)
+    res.sendResult(null, 200, '分配角色成功')
 })
 
 // 根据ID查询管理员
@@ -221,11 +221,11 @@ router.get("/:_id", async (req, res) => {
         }, {
             password: 0,
             __v: 0
-        }).populate('role','name')
+        }).populate('role', 'name')
     } catch (error) {
-        res.json(400, null)
+        res.sendResult(null, 400)
     }
-    res.json(200, data)
+    res.sendResult(data, 200)
 })
 
 module.exports = router;

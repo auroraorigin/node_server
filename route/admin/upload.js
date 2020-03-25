@@ -15,6 +15,7 @@ module.exports = (req, res) => {
         if (err)
             return res.json(400, null)
         try {
+            
             let url = path.join('127.0.0.1:8888', files.pic.path.split('public')[1])
             res.json(200, url)
         } catch (error) {

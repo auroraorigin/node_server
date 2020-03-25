@@ -16,10 +16,22 @@ const goodsSchema = new mongoose.Schema({
     },
     specification: {
         type: [{
-            name: String,
-            price: Number,
-            stock: Number,
-            freight: Number
+            name: {
+                type: String,
+                required: true
+            },
+            price: {
+                type: String,
+                required: true
+            },
+            stock: {
+                type: String,
+                required: true
+            },
+            freight: {
+                type: String,
+                required: true
+            }
         }],
         required: true
     },

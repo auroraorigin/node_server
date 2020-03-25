@@ -20,5 +20,5 @@ module.exports = async (res, req) => {
         }).lean()
     }
 
-    req.json(200, data)
+    req.sendResult(data,200,'获取侧边菜单栏成功')
 }

@@ -26,7 +26,7 @@ const adminSchema = new mongoose.Schema({
     },
     role: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'role',
+        ref: 'role'
     },
     state: {
         type: Boolean,
@@ -65,7 +65,7 @@ const validateAdmin = admin => {
         _id: Joi.string().regex(/^[0-9a-f]{24}$/).error(new Error('_id不符合要求')),
         name: Joi.string().min(2).max(20).error(new Error('用户名不符合要求')),
         email: Joi.string().email().error(new Error('邮箱格式不符合要求')),
-        password: Joi.string().regex(/^[a-zA-Z0-9]{6,20}$/).error(new Error('密码格式不符合要求')),
+        password: Joi.string().regex(/^[a-zA-Z0-9]{6,15}$/).error(new Error('密码格式不符合要求')),
         role: Joi.string().error(new Error('角色值非法')),
         state: Joi.boolean().error(new Error('状态值非法')),
         mobile: Joi.string().regex(/^1[3456789]\d{9}$/).error(new Error('手机号格式不符合要求'))

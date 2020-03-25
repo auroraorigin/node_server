@@ -3,15 +3,15 @@ const {
     Right
 } = require('../../model/admin/right.js');
 
-module.exports = async (res, req) => {
+module.exports = async (req, res) => {
 
-    const type = res.params.type
+    const type = req.params.type
     // 判断获取类型
     if (type === 'list') {
         const data = await Right.find({}, {
             __v: 0
         })
-        req.json(200, data)
+        res.sendResult(data,200,'获取权限列表成功')
     } else if (type === 'tree') {
         //获取一级权限
         let data = await Right.find({
@@ -39,8 +39,8 @@ module.exports = async (res, req) => {
             }
         }
 
-        req.json(200, data)
+        res.sendResult(data,200,'获取权限列表成功')
     } else
-        req.json(400, null)
+    res.sendResult(null,400,'获取权限列表失败')
 
 }

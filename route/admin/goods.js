@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
     // 判断参数是否合法
     if (!pagenum || !pagesize || pagenum < 1)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
 
     let response = {}
 
@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
         }).countDocuments()
     }
 
-    res.json(200, response)
+    res.sendResult(response, 200, '获取商品列表成功')
 })
 
 // 添加商品
@@ -61,13 +61,13 @@ router.post('/', async (req, res) => {
     try {
         await validateGoods(req.body)
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     // 添加商品
     await Goods.create(req.body)
 
-    res.json(200, req.body)
+    res.sendResult(null, 201, '添加商品成功')
 })
 
 // 根据ID查询商品
@@ -80,10 +80,10 @@ router.get('/:_id', async (req, res) => {
             __v: 0
         }).populate('categories', 'name')
     } catch (error) {
-        res.json(400, null)
+        res.sendResult(null, 400, '参数不合法')
     }
 
-    res.json(200, data)
+    res.sendResult(data, 200, '查询成功')
 })
 
 // 根据ID修改商品
@@ -97,9 +97,9 @@ router.put('/:_id', async (req, res) => {
             data
         )
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
-    res.json(200, null)
+    res.sendResult(null, 200, '修改成功')
 })
 
 // 根据ID删除商品
@@ -109,9 +109,86 @@ router.delete('/:_id', async (req, res) => {
             _id: req.params._id
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
-    res.json(204, null)
+    res.sendResult(null, 204, '删除成功')
 })
 
+// 根据ID添加商品规格
+router.post('/:_id/specification', async (req, res) => {
+
+    try {
+        await Goods.updateOne({
+            _id: req.params._id
+        }, {
+            $addToSet: {
+                specification: req.body
+            }
+        })
+    } catch (error) {
+        return res.sendResult(null, 400, '参数不合法')
+    }
+
+    const data = await Goods.findOne({
+        _id: req.params._id
+    })
+    res.sendResult(data.specification, 201, '添加成功')
+})
+
+// 根据商品ID以及规格ID修改规格
+router.put('/:_id/specification/:_sId', async (req, res) => {
+    var data = []
+    try {
+        const temp = await Goods.findOne({
+            _id: req.params._id
+        }).lean()
+        data = temp.specification
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]._id == req.params._sId) {
+                data[i].name = req.body.name
+                data[i].price = req.body.price
+                data[i].stock = req.body.stock
+                data[i].freight = req.body.freight
+                break
+            }
+        }
+
+        await Goods.updateOne({
+            _id: req.params._id
+        }, {
+            specification: data
+        })
+    } catch (error) {
+        return res.sendResult(null, 400, '参数不合法')
+    }
+    res.sendResult(data, 200, '修改成功')
+})
+
+// 根据商品ID以及规格ID删除指定ID
+router.delete('/:_id/specification/:_sId', async (req, res) => {
+    var data = []
+    try {
+
+        const temp = await Goods.findOne({
+            _id: req.params._id
+        }).lean()
+        data = temp.specification
+
+        function check(item) {
+            return item._id == req.params._sId
+        }
+        
+        data.splice(data.findIndex(check), 1)
+        await Goods.updateOne({
+            _id: req.params._id
+        }, {
+            specification: data
+        })
+
+    } catch (error) {
+        return res.sendResult(null,400,'参数不合法')
+    }
+    res.sendResult(data,204,'删除成功')
+})
 module.exports = router;

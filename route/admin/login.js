@@ -18,13 +18,13 @@ module.exports = async (req, res) => {
 
     // 判断参数是否存在
     if (!name || !password)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '请输入用户名和密码')
 
     // 判断参数是否合法
     try {
         await validateAdmin(req.body)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '请输入正确的用户名和密码')
     }
 
     // 判断用户账号是否存在
@@ -43,8 +43,10 @@ module.exports = async (req, res) => {
                 // 有效期一天
                 expiresIn: 60 * 60 * 24
             })
-            return res.json(200, token)
+
+            return res.sendResult(token, 200, '登陆成功')
         }
     }
-    res.json(400, null)
+
+    return res.sendResult(null, 400, '请输入正确的用户名和密码')
 }

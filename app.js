@@ -14,8 +14,6 @@ app.use(bodyPaser.urlencoded({
 	extended: false
 }));
 
-
-
 // 数据库连接
 require('./model/connect');
 

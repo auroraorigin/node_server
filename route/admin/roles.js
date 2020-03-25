@@ -67,7 +67,7 @@ router.get('/', async (req, res) => {
         data[i].children = right
     }
 
-    res.json(200, data)
+    res.sendResult(data, 200)
 })
 
 // 添加角色
@@ -78,13 +78,13 @@ router.post('/', async (req, res) => {
     } = req.body
 
     if (!name)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
 
     // 判断参数是否合法
     try {
         await validateRole(req.body)
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     // 判断角色名是否存在
@@ -93,14 +93,14 @@ router.post('/', async (req, res) => {
     })
 
     if (verify)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '角色名字已存在')
 
     await Role.create({
         name,
         desc
     })
 
-    res.json(201, null)
+    res.sendResult(null, 201, '添加角色成功')
 })
 
 // 修改角色
@@ -112,18 +112,18 @@ router.put('/:_id', async (req, res) => {
     const {
         name,
         desc
-    } = req.query
+    } = req.body
 
     if (!_id || !name)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
 
     // 判断参数是否合法
     try {
-        await validateRole(req.query)
+        await validateRole(req.body)
         await validateRole(req.params)
     } catch (err) {
         console.log(err)
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
     // 尝试修改角色名字
@@ -135,11 +135,11 @@ router.put('/:_id', async (req, res) => {
             desc
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '角色名字已存在')
     }
 
 
-    res.json(200, null)
+    res.sendResult(null, 200, '修改成功')
 })
 
 // 删除角色
@@ -151,10 +151,10 @@ router.delete('/:_id', async (req, res) => {
             _id: req.params
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
-    res.json(204, null)
+    res.sendResult(null, 204, '删除成功')
 })
 
 // 角色授权
@@ -176,15 +176,14 @@ router.post('/:_id/rights', async (req, res) => {
             children: arr
         })
     } catch (error) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
-    res.json(200, null)
+    res.sendResult(null, 200, '授权成功')
 })
 
 // 删除角色指定权限
 router.delete('/:roleId/rights/:rightId', async (req, res) => {
-
     try {
         // 找出roleId对应的角色
         var role = await Role.findOne({
@@ -215,11 +214,46 @@ router.delete('/:roleId/rights/:rightId', async (req, res) => {
             children
         })
 
+        // 找出一级权限
+        var data = await Right.find({
+            _id: {
+                $in: children
+            },
+            pid: []
+        }, {
+            __v: 0,
+            pid: 0
+        }).lean();
+
+        // 嵌套循环获取树结构
+        for (let i = 0, len = data.length; i < len; i++) {
+            // 获取二级权限
+            data[i].children = await Right.find({
+                _id: {
+                    $in: children
+                },
+                pid: [data[i]._id]
+            }, {
+                __v: 0
+            }).lean()
+
+            // 获取三级权限
+            for (let j = 0, clen = data[i].children.length; j < clen; j++) {
+                data[i].children[j].children = await Right.find({
+                    _id: {
+                        $in: children
+                    },
+                    pid: [data[i].children[j]._id, data[i]._id]
+                }, {
+                    __v: 0
+                })
+            }
+        }
     } catch (err) {
-        return res.json(400, null)
+        return res.sendResult(null, 400, '参数不合法')
     }
 
-    res.json(204, null)
+    res.sendResult(data, 204, '删除角色指定权限成功')
 })
 
 // 根据ID查询角色
@@ -230,11 +264,11 @@ router.get('/:_id', async (req, res) => {
             _id: req.params._id
         }, {
             __v: 0,
-            children:0
+            children: 0
         })
     } catch (error) {
-        res.json(400, null)
+        res.sendResult(null, 400, '参数不合法')
     }
-    res.json(200, data)
+    res.sendResult(data, 200, '查询成功')
 })
 module.exports = router;

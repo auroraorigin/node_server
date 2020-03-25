@@ -3,14 +3,31 @@ const express = require('express');
 // 创建管理系统API路由对象
 const admin = express.Router();
 
+// 解决跨域问题
+admin.all('*', function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With , yourHeaderFeild');
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+
+    if (req.method == 'OPTIONS') {
+        res.send(200); //让options请求快速返回
+    } else {
+        next();
+    }
+});
+
+// 初始化统一响应机制
+var resextra = require('./admin/resextra')
+admin.use(resextra)
+
 // 登录模块
 admin.post('/login', require('./admin/login'));
 
-// 验证用户登录状态模块
-admin.use('/', require("./admin/authorization"));
-
 // 获取左侧菜单
 admin.get('/menus', require("./admin/menus"));
+
+// 验证用户登录状态模块
+admin.use('/', require("./admin/authorization"));
 
 // 管理员管理模块
 admin.use('/admins', require("./admin/admins"));
@@ -28,7 +45,7 @@ admin.use('/categories', require("./admin/categories"));
 admin.use('/goods', require("./admin/goods"));
 
 // 图片上传
-admin.post('/upload',require("./admin/upload"))
+admin.post('/upload', require("./admin/upload"))
 
 // 将路由对象作为模块成员进行导出
 module.exports = admin;
