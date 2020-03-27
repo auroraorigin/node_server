@@ -60,12 +60,11 @@ router.post('/', async (req, res) => {
     // 判断参数是否合法
     try {
         await validateGoods(req.body)
+        // 添加商品
+        await Goods.create(req.body)
     } catch (error) {
         return res.sendResult(null, 400, '参数不合法')
     }
-
-    // 添加商品
-    await Goods.create(req.body)
 
     res.sendResult(null, 201, '添加商品成功')
 })
@@ -86,20 +85,52 @@ router.get('/:_id', async (req, res) => {
     res.sendResult(data, 200, '查询成功')
 })
 
-// 根据ID修改商品
+// 根据ID修改商品基本信息
 router.put('/:_id', async (req, res) => {
     const data = req.body
     try {
-        await validateGoods(data)
         await Goods.updateOne({
-                _id: req.params._id
-            },
-            data
-        )
+            _id: req.params._id
+        }, {
+            name: data.name,
+            url: data.url,
+            desc: data.desc,
+            categories: data.categories,
+        })
     } catch (error) {
         return res.sendResult(null, 400, '参数不合法')
     }
     res.sendResult(null, 200, '修改成功')
+})
+
+// 根据商品ID修改商品详情图
+router.put('/:_id/detail', async (req, res) => {
+
+    var {
+        swiperUrl,
+        urls
+    } = req.body
+    var nswiperUrl = []
+    var nurls = []
+    try {
+        for (let i = 0; i < swiperUrl.length; i++) {
+            nswiperUrl.push(swiperUrl[i].url)
+        }
+        for (let i = 0; i < urls.length; i++) {
+            nurls.push(urls[i].url)
+        }
+    
+        await Goods.updateOne({
+            _id: req.params._id
+        }, {
+            swiperUrl: nswiperUrl,
+            urls: nurls
+        })
+    } catch (error) {
+        console.log(error)
+        return res.sendResult(null,400,'参数不合法')
+    }
+    res.sendResult(null,200,'修改成功')
 })
 
 // 根据ID删除商品
@@ -178,7 +209,7 @@ router.delete('/:_id/specification/:_sId', async (req, res) => {
         function check(item) {
             return item._id == req.params._sId
         }
-        
+
         data.splice(data.findIndex(check), 1)
         await Goods.updateOne({
             _id: req.params._id
@@ -187,8 +218,24 @@ router.delete('/:_id/specification/:_sId', async (req, res) => {
         })
 
     } catch (error) {
-        return res.sendResult(null,400,'参数不合法')
+        return res.sendResult(null, 400, '参数不合法')
     }
-    res.sendResult(data,204,'删除成功')
+    res.sendResult(data, 204, '删除成功')
 })
+
+// 根据商品ID修改商品状态
+router.put('/:_id/state/:state', async (req, res) => {
+    try {
+        await Goods.updateOne({
+            _id: req.params._id
+        }, {
+            state: req.params.state
+        })
+    } catch (error) {
+        return res.sendResult(null, 400, '参数不合法')
+    }
+
+    res.sendResult(null, 200, '修改成功')
+})
+
 module.exports = router;

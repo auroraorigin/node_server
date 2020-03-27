@@ -12,15 +12,12 @@ module.exports = (req, res) => {
     form.keepExtensions = true;
     // 4.解析表单
     form.parse(req, async (err, fields, files) => {
+        let url = ''
         if (err)
-            return res.json(400, null)
-        try {
-            
-            let url = path.join('127.0.0.1:8888', files.pic.path.split('public')[1])
-            res.json(200, url)
-        } catch (error) {
-            res.json(400, null)
-        }
-    
+            return res.sendResult(null, 400, '上传失败')
+        
+        url = 'http://127.0.0.1:8888'+files.file.path.split('public')[1].replace(/\\/g, "/")
+        
+        res.sendResult(url, 200, '上传成功')
     })
 }

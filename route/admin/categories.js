@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         const data = await Category.find({}, {
             __v: 0
         })
-        return res.sendResult(data, 200, '获取商品列表成功')
+        return res.sendResult(data, 200, '获取商品分类列表成功')
 
     } else if (pagenum && pagesize) {
         let response = {}
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
         // 获取商品分类数据总数
         response.totalpage = await Category.estimatedDocumentCount()
 
-        return res.sendResult(response, 200, '获取商品列表成功')
+        return res.sendResult(response, 200, '获取商品分类列表成功')
     }
 
     res.sendResult(null, 400, '获取商品列表失败')

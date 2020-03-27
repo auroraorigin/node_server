@@ -14,6 +14,11 @@ const goodsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    state:{
+        type:Boolean,
+        required:true,
+        default:false
+    },
     specification: {
         type: [{
             name: {
@@ -50,7 +55,8 @@ const goodsSchema = new mongoose.Schema({
     },
     desc: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 50
     }
 });
 
