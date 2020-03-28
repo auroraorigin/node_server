@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
     // 判断参数是否合法
     if (!pagenum || !pagesize || pagenum < 1)
-        return res.sendResult(null, 400)
+        return res.sendResult(null, 400,'参数不合法')
 
     let response = {}
     // 判断查询条件
@@ -81,7 +81,7 @@ router.get('/', async (req, res) => {
         }).countDocuments()
     }
 
-    res.sendResult(response, 200)
+    res.sendResult(response, 200,'获取管理员列表成功')
 });
 
 // 添加管理员

@@ -2,6 +2,7 @@
 const formidable = require('formidable');
 // 引入路径模块
 const path = require('path');
+const Url = require('../../config/url')
 
 module.exports = (req, res) => {
     // 1.创建表单解析对象
@@ -16,7 +17,7 @@ module.exports = (req, res) => {
         if (err)
             return res.sendResult(null, 400, '上传失败')
         
-        url = 'http://127.0.0.1:8888'+files.file.path.split('public')[1].replace(/\\/g, "/")
+        url = Url.path + files.file.path.split('public')[1].replace(/\\/g, "/")
         
         res.sendResult(url, 200, '上传成功')
     })

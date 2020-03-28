@@ -1733,40 +1733,46 @@ brew install GraphicsMagick
 | query                | 查询参数        | 可以为空 |
 | pagenum              | 当前页码        | 不能为空 |
 | pagesize             | 每页显示条数    | 不能为空 |
-| user_id              | 用户 ID         | 可以为空 |
-| pay_status           | 支付状态        | 可以为空 |
-| is_send              | 是否发货        | 可以为空 |
-| order_fapiao_title   | ['个人','公司'] | 可以为空 |
-| order_fapiao_company | 公司名称        | 可以为空 |
-| order_fapiao_content | 发票内容        | 可以为空 |
-| consignee_addr       | 发货地址        | 可以为空 |
+
 
 - 响应数据
 
-```
+```json
 {
-    "data": {
-        "total": 1,
-        "pagenum": "1",
-        "goods": [
-            {
-                "order_id": 47,
-                "user_id": 133,
-                "order_number": "itcast-59e7502d7993d",
-                "order_price": 322,
-                "order_pay": "1",
-                "is_send": "是",
-                "trade_no": "",
-                "order_fapiao_title": "个人",
-                "order_fapiao_company": "",
-                "order_fapiao_content": "办公用品",
-                "consignee_addr": "a:7:{s:6:\"cgn_id\";i:1;s:7:\"user_id\";i:133;s:8:\"cgn_name\";s:9:\"王二柱\";s:11:\"cgn_address\";s:51:\"北京市海淀区苏州街长远天地大厦305室\";s:7:\"cgn_tel\";s:11:\"13566771298\";s:8:\"cgn_code\";s:6:\"306810\";s:11:\"delete_time\";N;}",
-                "pay_status": "1",
-                "create_time": 1508331565,
-                "update_time": 1508331565
-            }
-        ]
-    },
+    "data": [
+                {
+                    goods: [
+                        {
+                        name: '商品名称',
+                        url: '../../images/homePage/floor.jpg',
+                        specifiation: '两斤',
+                        buyNumber: 5,
+                        price: '150.00'
+                        },
+                        {
+                        name: '商品名称',
+                        url: '../../images/homePage/floor.jpg',
+                        specifiation: '三斤',
+                        buyNumber: 11,
+                        price: '200.00'
+                        }
+                    ],
+                    expressNumber: '123456789',
+                    _id: 5e7df248b4848b2bc44741e0,
+                    openid: 'ovUr_46bapJpbfh2mK_C5FNLT8OY',
+                    address: {
+                        consignee: '张三',
+                        detail_address: '新港中路397号',
+                        mobile: '020-81167888',
+                        region_name: '广东省广州市海珠区'
+                    },
+                    state: '已完成',
+                    totalPrice: '2950',
+                    freight: '20',
+                    creatDate: '2020-03-27 20:32:08',
+                    updateDate: '2020-03-27 20:32:08'
+                }
+    ],
     "meta": {
         "msg": "获取成功",
         "status": 200
@@ -1899,7 +1905,7 @@ brew install GraphicsMagick
 
 ### 1.10.5. 查看物流信息
 
-+ 请求路径：/kuaidi/:id
++ 请求路径：orders/kuaidi/:id
 
 + 请求方法：get
 

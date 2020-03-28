@@ -44,6 +44,9 @@ admin.use('/categories', require("./admin/categories"));
 // 商品管理模块
 admin.use('/goods', require("./admin/goods"));
 
+// 订单管理模块
+admin.use('/orders', require("./admin/orders"));
+
 // 图片上传
 admin.post('/upload', require("./admin/upload"))
 
