@@ -37,16 +37,17 @@ router.get('/', async (req, res) => {
 // 添加商品分类
 router.post('/', async (req, res) => {
     const {
-        name
+        name,
+        url
     } = req.body
 
-    if (!name)
+    if (!name||!url)
         return res.sendResult(null, 400, '参数不合法')
 
 
     try {
         await Category.create({
-            name
+            name,url
         })
     } catch (error) {
         return res.sendResult(null, 400, '分类名称已存在')
@@ -59,12 +60,14 @@ router.post('/', async (req, res) => {
 router.put('/:_id', async (req, res) => {
     const _id = req.params._id
     const name = req.body.name
+    const url = req.body.url
 
     try {
         await Category.updateOne({
             _id
         }, {
-            name
+            name,
+            url
         })
         res.sendResult(null,200,'修改成功')
     } catch (error) {

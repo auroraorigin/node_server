@@ -50,5 +50,8 @@ admin.use('/orders', require("./admin/orders"));
 // 图片上传
 admin.post('/upload', require("./admin/upload"))
 
+// 数据报表
+admin.get('/reports/:type', require("./admin/reports"))
+
 // 将路由对象作为模块成员进行导出
 module.exports = admin;
