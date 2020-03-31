@@ -8,7 +8,7 @@ const adSchema = new mongoose.Schema({
         required: true
     },
     notice: {
-        type: [String],
+        type: [{name:String}],
         required: true
     },
     floor: {
@@ -32,7 +32,7 @@ const Ad = mongoose.model('ad', adSchema);
 
 // Ad.create({
 //     swiper:["http://127.0.0.1:8888/uploads/upload_4eaceda3e10c674b195969820de17af1.jpg","http://127.0.0.1:8888/uploads/upload_d92409b79c53859ed0013a788d629926.jpg"],
-//     notice:["测试公告","公告示例","公告显示"],
+//     notice:[{name:"测试公告"},{name:"公告示例"},{name:"公告显示"}],
 //     floor:[{url:"http://127.0.0.1:8888/uploads/upload_2766c081b3cc6a3a33b5621da227059a.jpg",goods:['5e75dc502fce220784b68850','5e7835f6672c4c1eb4c3937c']},{url:"http://127.0.0.1:8888/uploads/upload_2766c081b3cc6a3a33b5621da227059a.jpg",goods:['5e75dc502fce220784b68850','5e7835f6672c4c1eb4c3937c']}],
 //     cate:[{name:"推荐",goods:['5e75dc502fce220784b68850','5e7835f6672c4c1eb4c3937c']}]
 // })
