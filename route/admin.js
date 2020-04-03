@@ -53,7 +53,7 @@ admin.post('/upload', require("./admin/upload"))
 // 数据报表
 admin.get('/reports/:type', require("./admin/reports"))
 
-// 推广信息管理
+// 页面管理
 admin.use('/ad',require("./admin/ads"))
 
 // 将路由对象作为模块成员进行导出

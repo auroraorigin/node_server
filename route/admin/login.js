@@ -34,6 +34,9 @@ module.exports = async (req, res) => {
     if (admin) {
         let isValid = await bcrypt.compare(password, admin.password)
         if (isValid) {
+            // 判断账号状态
+            if(!admin.state)
+                return res.sendResult(null, 401, '该账号已停用')
             // 账号密码正确，签发token
             const payload = {
                 _id: admin._id

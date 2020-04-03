@@ -196,7 +196,7 @@ router.put('/:_id/specification/:_sId', async (req, res) => {
     res.sendResult(data, 200, '修改成功')
 })
 
-// 根据商品ID以及规格ID删除指定ID
+// 根据商品ID以及规格ID删除指定规格
 router.delete('/:_id/specification/:_sId', async (req, res) => {
     var data = []
     try {

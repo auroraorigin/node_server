@@ -14,7 +14,6 @@ const {
 
 // 获取管理员列表
 router.get('/', async (req, res) => {
-
     const {
         query,
         pagenum,

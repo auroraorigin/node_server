@@ -20,6 +20,7 @@ router.get('/', async (req, res) => {
         __v: 0
     }).lean();
 
+
     // 循环处理每个角色权限
     for (let i = 0; i < data.length; i++) {
 
@@ -67,7 +68,8 @@ router.get('/', async (req, res) => {
         data[i].children = right
     }
 
-    res.sendResult(data, 200)
+
+    res.sendResult(data, 200, '获取角色列表成功')
 })
 
 // 添加角色

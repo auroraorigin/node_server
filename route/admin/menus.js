@@ -3,13 +3,20 @@ const {
 } = require('../../model/admin/right.js');
 
 module.exports = async (res, req) => {
-    
+
     let data = await Right.find({
         pid: []
     }, {
         __v: 0,
         pid: 0
     }).lean();
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].name === '图片上传') {
+            data.splice(i, 1)
+            break
+        }
+    }
 
     for (let i = 0, len = data.length; i < len; i++) {
         data[i].children = await Right.find({
@@ -20,5 +27,5 @@ module.exports = async (res, req) => {
         }).lean()
     }
 
-    req.sendResult(data,200,'获取侧边菜单栏成功')
+    req.sendResult(data, 200, '获取侧边菜单栏成功')
 }

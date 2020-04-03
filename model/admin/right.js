@@ -16,6 +16,10 @@ const rightSchema = new mongoose.Schema({
     pid: {
         type: [String],
         default: []
+    },
+    method:{
+        type:String,
+        default: ''
     }
 })
 
