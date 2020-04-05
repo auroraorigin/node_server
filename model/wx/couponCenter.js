@@ -24,7 +24,7 @@ const couponCenterSchema = new mongoose.Schema({
 // 创建优惠卷中心集合
 const CouponCenter = mongoose.model('CouponCenter', couponCenterSchema);
 
-async function createCouponCenter() {
+/*async function createCouponCenter() {
     await CouponCenter.create({
         name: "海鲜商城",
         money: ["250", "25"],
@@ -32,7 +32,7 @@ async function createCouponCenter() {
         number: 50
     });
 }
-createCouponCenter();
+createCouponCenter();*/
 
 module.exports = {
     CouponCenter

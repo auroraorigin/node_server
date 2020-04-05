@@ -7,6 +7,18 @@ const request = require('request');
 // 创建微信小程序API路由
 const wx = express.Router();
 
+// 首页信息
+wx.get('/homePage',require("./wx/homePage"))
+
+// 搜索页面
+wx.get('/search',require("./wx/search"))
+
+// 详情页面
+wx.get('/detail',require("./wx/detail"))
+
+// 分类页面
+wx.get('/categories',require("./wx/categories"))
+
 // 加载登录校验模块
 wx.post('/checkUser', require('./wx/checkUser'));
 
