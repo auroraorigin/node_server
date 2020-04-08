@@ -5,11 +5,10 @@ const {
 
 
 module.exports = async (req, res) => {
-    let { id }= req.query
-    let temp = JSON.parse(id)
-    let{_id}=temp
+    let { _id }= req.query
+    let temp = JSON.parse(_id)
     
-    const data = await Goods.findOne({_id},{categories:0,state:0,__v:0})
+    const data = await Goods.findOne({_id:temp._id},{categories:0,state:0,__v:0})
 
     res.json({"data":data,"status":200})
 }

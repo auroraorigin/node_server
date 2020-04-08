@@ -13,11 +13,17 @@ wx.get('/homePage',require("./wx/homePage"))
 // 搜索页面
 wx.get('/search',require("./wx/search"))
 
+// 搜索页面关键词
+wx.get('/searchKey',require("./wx/searchKey"))
+
 // 详情页面
 wx.get('/detail',require("./wx/detail"))
 
 // 分类页面
 wx.get('/categories',require("./wx/categories"))
+
+// 判断购物车页面商品是否有效
+wx.get('/cart',require("./wx/cart"))
 
 // 加载登录校验模块
 wx.post('/checkUser', require('./wx/checkUser'));

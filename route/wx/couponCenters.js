@@ -31,7 +31,7 @@ module.exports.getCouponCenter = async (req, res) => {
                     let coupon = await Coupon.find({ openid: decode.openid });
                     for (var i = 0; i < result.length; i++) {
                         for (var j = 0; j < coupon.length; j++) {
-                            if (result[i].money[0] == coupon[j].money[0] && result[i].money[1] == coupon[j].money[1])
+                            if (result[i]._id==coupon[j].couponCenterId)
                                 couponList[i].isActive = true;
                         }
                     }
@@ -68,6 +68,7 @@ module.exports.getCoupon = async (req, res) => {
                         effective: data.effective,
                         state: "可用",
                         name: data.name,
+                        couponCenterId:id,
                         openid: decode.openid
                     });
                     coupon.save();

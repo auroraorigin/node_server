@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema({
     },//订单地址
     state:{
         type:String,
-        enum:['已完成','待付款','待发货','待收货','退款'],
+        enum:['待付款','待发货','待收货','退款中','交易成功','交易失败'],
         required:true,
     },//订单状态
     goods:{

@@ -5,24 +5,27 @@ const mongoose = require('mongoose');
 const couponSchema = new mongoose.Schema({
     name: {
         type: String,
-        required:true,
+        required: true,
     },//优惠卷名称
-    money:{
-        type:Array,
-        required:true,
+    money: {
+        type: Array,
+        required: true,
     },//达到满减的价格，优惠价格
-    effective:{
-        type:Array,
-        required:true,
+    effective: {
+        type: Array,
+        required: true,
     },//有效期
-    state:{
-        type:String,
-        enum:['可用','不可用'],
-        required:true,
+    state: {
+        type: String,
+        enum: ['可用', '不可用'],
+        required: true,
     },//状态
-    openid:{
-        type:String,
-        required:true,
+    couponCenterId: {
+        type: String
+    },//获取的优惠卷所在数据库的_id
+    openid: {
+        type: String,
+        required: true,
     }//用户唯一标识符
 })
 

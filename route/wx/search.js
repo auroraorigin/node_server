@@ -13,6 +13,6 @@ module.exports = async (req, res) => {
     },
     state:true
     },{state:0,swiperUrl:0,urls:0,desc:0,categories:0,__v:0})
-    console.log(data)
+
    res.json({"data":data,"status":200})
 }
