@@ -14,7 +14,9 @@ module.exports.getAddress = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             Address.findOne({ openid: decode.openid }, function (err, data) {
@@ -45,7 +47,9 @@ module.exports.addressUpdate = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             Address.findOne({ openid: decode.openid }, function (err, data) {
@@ -83,7 +87,9 @@ module.exports.getDefaultAddress = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             Address.findOne({ openid: decode.openid }, function (err, data) {
@@ -95,7 +101,9 @@ module.exports.getDefaultAddress = async (req, res) => {
                         "defaultAddress": defaultAddress
                     });
                 } else {
-                    return res.json(404, null)
+                    return res.json({
+                        "status":"error"
+                    })
                 }
             })
         }

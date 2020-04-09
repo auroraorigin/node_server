@@ -39,6 +39,7 @@ module.exports = async (req, res) => {
         temp.stock=stock
         temp.buyNumber=goods[i].buyNumber
         temp.specificationIndex=goods[i].specificationIndex
+        temp.checked=goods[i].checked
 
        if(temp.buyNumber>temp.specification[temp.specificationIndex].stock)
             temp.buyNumber=temp.specification[temp.specificationIndex].stock

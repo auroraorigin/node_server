@@ -9,6 +9,8 @@ const couponCenterSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        maxlength:15,
+        minlength:2
     },//优惠卷名称
     money: {
         type: Array,

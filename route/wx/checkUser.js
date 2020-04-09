@@ -38,7 +38,9 @@ module.exports = async (req, res) => {
         request(options, (error, response, body) => {
             if (error) {
                 //请求异常时，返回错误信息
-                return res.status(400).json(null)
+                return res.json({
+                    "status":"error"
+                })
             } else {
                 //返回值的字符串转JSON
                 let _data = JSON.parse(body);

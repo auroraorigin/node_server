@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema({
         type:Array,
         required:true
     },//商品
-    coupon:String,//优惠卷
+    coupon:Object,//优惠卷
     totalPrice:{
         type:String,
         required:true,

@@ -20,7 +20,9 @@ module.exports.getCouponCenter = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             CouponCenter.find().select("name effective money number").lean().then(async result => {
                 if (result) {
@@ -57,7 +59,9 @@ module.exports.getCoupon = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             //获取传递过来的参数
             const { id, number } = req.body;

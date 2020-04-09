@@ -13,9 +13,10 @@ const {
     Coupon
 } = require('../../model/wx/coupon.js');
 
+//引入判断对象是否为空的函数
 const {
     isObjEmpty
-}=require('../../config/isObjEmpty')
+} = require('../../config/isObjEmpty')
 
 
 module.exports.getMessage = async (req, res) => {
@@ -24,7 +25,9 @@ module.exports.getMessage = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             User.findOne({ openid: decode.openid }, "name mobile sex birthday region wxNumber detailAddress", function (err, data) {
@@ -52,20 +55,25 @@ module.exports.getMessage = async (req, res) => {
                     }
                 }
                 else {
-                    return res.json(404, null)
+                    return res.json({
+                        "status":"error"
+                    })
                 }
             })
         }
     })
 }
 
+//更新个人信息
 module.exports.messageUpdata = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             User.findOne({ openid: decode.openid }, function (err, data) {
@@ -85,7 +93,9 @@ module.exports.messageUpdata = async (req, res) => {
                     });
                 }
                 else {
-                    return res.json(404, null)
+                    return res.json({
+                        "status":"error"
+                    })
                 }
             })
         }
@@ -99,7 +109,9 @@ module.exports.getCouponList = async (req, res) => {
     const secretOrKey = keys.secretOrKey;
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
-            return res.json(401, null)
+            return res.json({
+                "status":"error"
+            })
         } else {
             // token验证通过，放行
             if (req.body.state == 1) {//表示要获取可用优惠卷列表
@@ -114,6 +126,50 @@ module.exports.getCouponList = async (req, res) => {
                     "coupon": coupon
                 });
             })
+        }
+    })
+}
+
+//获取优惠状态
+module.exports.cheapState = async (req, res) => {
+    // 判断token是否有效
+    const token = req.get("Authorization");
+    const secretOrKey = keys.secretOrKey;
+    jwt.verify(token, secretOrKey, async (err, decode) => {
+        if (err) {
+            return res.json({
+                "status":"error"
+            })
+        } else {
+            let coupon = await Coupon.find({ openid: decode.openid },"name money state effective couponCenterId");
+            //可使用优惠卷数组
+            let canUseCoupon = [];
+            //将满足满减的优惠卷数组进行拼接
+            if (coupon.length!=0) {
+                for (var i = 0; i < coupon.length; i++) {
+                    if (Number(coupon[i].money[0]) <= Number(req.body.totalMoney))
+                        canUseCoupon=canUseCoupon.concat(coupon[i])
+                }
+                //如果可用优惠卷为true
+                if(canUseCoupon.length!=0){
+                    return res.json({
+                        "status":"ok",
+                        "canUseCoupon":canUseCoupon,
+                        "state":"有可用优惠卷"
+                    })
+                }else{
+                    return res.json({
+                        "status":"ok",
+                        "state":"无可用优惠卷"
+                    })
+                }
+            }else{
+                return res.json({
+                    "status":"error",
+                    "message":"用户未拥有任何优惠卷",
+                    "state":"无可用优惠卷"
+                })
+            }
         }
     })
 }

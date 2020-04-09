@@ -12,6 +12,8 @@ const {
 } = require('../../model/admin/goods')
 // 引入分类集合
 const Category = require('../../model/admin/category')
+// 引入分类集合
+const {CouponCenter} = require('../../model/wx/couponCenter')
 
 // 获取页面信息
 router.get('/', async (req, res) => {
@@ -142,6 +144,27 @@ router.put('/cate', async (req, res) => {
         cate: ncate
     })
     res.sendResult(null, 200, '修改成功')
+})
+
+// 获取优惠券信息
+router.get('/coupon', async (req, res) => {
+    const data = await CouponCenter.find({})
+    res.sendResult(data, 200, '获取成功')
+})
+
+// 添加优惠券
+router.post('/coupon', async (req, res) => {
+    let coupon = req.body
+    coupon.money[0]=req.body.money[0].toString()
+    coupon.money[1]=req.body.money[1].toString()
+    await CouponCenter.create(coupon)
+    res.sendResult(null, 201, '添加成功')
+})
+
+// 删除优惠券
+router.delete('/coupon/:_id', async (req, res) => {
+    await CouponCenter.findByIdAndDelete({_id:req.params._id})
+    res.sendResult(null, 200, '删除成功')
 })
 
 // 将路由对象作为模块成员进行导出
