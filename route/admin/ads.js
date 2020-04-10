@@ -167,5 +167,23 @@ router.delete('/coupon/:_id', async (req, res) => {
     res.sendResult(null, 200, '删除成功')
 })
 
+// 修改商品免邮金额
+router.put('/discount', async (req, res) => {
+    await Ad.updateOne({},{discount:req.body.discount})
+    res.sendResult(null, 200, '修改成功')
+})
+
+// 修改商品详情图
+router.put('/detail', async (req, res) => {
+    const temp = req.body.detail
+    let detail=[]
+    for (let i = 0; i < temp.length; i++) {
+        detail.push(temp[i].url)
+    }
+    
+    await Ad.updateOne({},{detail})
+    res.sendResult(null, 200, '修改成功')
+})
+
 // 将路由对象作为模块成员进行导出
 module.exports = router;

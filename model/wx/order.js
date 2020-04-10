@@ -27,6 +27,9 @@ const orderSchema = new mongoose.Schema({
     expressNumber:{
         type:String,
     },
+    timestamp:{
+        type:String
+    },
     freight:String,//运费
     creatDate:String,//创建日期
     updateDate:String,//更新日期

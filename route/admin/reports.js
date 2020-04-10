@@ -1,13 +1,17 @@
 // 引用expess框架
 const express = require('express');
+// 引入订单集合
+const {
+    Order
+  } = require('../../model/wx/order');
 
 module.exports = async (req, res) => {
     const {
         type
     } = req.params
     if (type == 'zhuzhuangtu') {
-        var dataAxis = ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
-        var data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
+        var dataAxis = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+        var data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149];
         var yMax = 500;
         var dataShadow = [];
 
@@ -30,28 +34,28 @@ module.exports = async (req, res) => {
     } else if (type == 'bingzhuangtu') {
         var poption = {
             legend: {
-                data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+                data: ['省外', '茂名', '阳江', '珠海', '广州']
             },
             series: [{
                 data: [{
                         value: 335,
-                        name: '直接访问'
+                        name: '阳江'
                     },
                     {
                         value: 310,
-                        name: '邮件营销'
+                        name: '广州'
                     },
                     {
                         value: 234,
-                        name: '联盟广告'
+                        name: '珠海'
                     },
                     {
                         value: 135,
-                        name: '视频广告'
+                        name: '省外'
                     },
                     {
                         value: 1548,
-                        name: '搜索引擎'
+                        name: '茂名'
                     }
                 ]
             }]

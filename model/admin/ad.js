@@ -24,7 +24,10 @@ const adSchema = new mongoose.Schema({
             goods: []
         }],
         required: true
-    }
+    },
+    detail:[String],
+    discount:Number
+    
 })
 
 // 创建权限集合

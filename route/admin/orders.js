@@ -27,7 +27,6 @@ function autoComNumber(orderno) {
   })
 }
 
-
 // 获取订单列表
 router.get('/', async (req, res) => {
   const {
@@ -96,11 +95,13 @@ router.get('/', async (req, res) => {
 router.put('/:_id/:operation', async (req, res) => {
   try {
     if (req.params.operation === 'send') {
+      let time = parseInt(Date.now()/1000)+60*60*24*7
       await Order.updateOne({
         _id: req.params._id
       }, {
         state: '待收货',
-        expressNumber: req.body.expressNumber
+        expressNumber: req.body.expressNumber,
+        timestamp:time
       })
     } else if (req.params.operation === 'close') {
       await Order.updateOne({
