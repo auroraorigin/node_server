@@ -26,14 +26,19 @@ const orderSchema = new mongoose.Schema({
     },//总价
     expressNumber:{
         type:String,
-    },
-    timestamp:{
-        type:String
-    },
+    },//快递号
     freight:String,//运费
-    creatDate:String,//创建日期
+    createDate:String,//创建日期
     updateDate:String,//更新日期
-    datetimeTo:String//订单关闭时间(只有待付款订单和待发货订单具备)
+    timestamp:Number,//订单关闭时间戳(只有待付款订单和待发货订单具备)
+    userWord:{
+        type:String,
+        maxlength:50
+    },//用户留言
+    returnReason:{
+        type:String,
+        maxlength:50
+    }//退款原因
 });
 
 //创建订单集合

@@ -32,7 +32,8 @@ router.get('/', async (req, res) => {
   const {
     query,
     pagenum,
-    pagesize
+    pagesize,
+    radio
   } = req.query
 
   // 判断参数是否合法
@@ -42,13 +43,27 @@ router.get('/', async (req, res) => {
   var response = {}
   try {
     if (!query) {
-      // 获取订单列表
+      if(radio==="全部")
+      {
+        // 获取订单列表
       response.data = await Order.find({}, {
         __v: 0
-      }).skip((pagenum - 1) * pagesize).limit(Number(pagesize));
+      }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize));
 
       // 获取订单数据总数
       response.totalpage = await Order.estimatedDocumentCount()
+      }
+      else{
+        // 获取订单列表
+      response.data = await Order.find({state:radio}, {
+        __v: 0
+      }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize));
+
+      // 获取订单数据总数
+      response.totalpage = await Order.find({state:radio}, {
+        __v: 0
+      }).skip((pagenum - 1) * pagesize).limit(Number(pagesize)).countDocuments()
+      }
 
     } else {
       let isID
@@ -60,28 +75,62 @@ router.get('/', async (req, res) => {
       }
 
       if (isID) { 
-        // 获取与查询信息相关的订单数据列表
+        if(radio==="全部")
+        {
+          // 获取与查询信息相关的订单数据列表
         response.data = await Order.find({
           _id: query
         }, {
           __v: 0
-        }).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
+        }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
         // 获取与查询信息相关的管理员数据总数
         response.totalpage = await Order.find({
           _id: query
         }).countDocuments()
+        }
+        else{
+        // 获取与查询信息相关的订单数据列表
+        response.data = await Order.find({
+          _id: query,
+          state:radio
+        }, {
+          __v: 0
+        }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
+        // 获取与查询信息相关的管理员数据总数
+        response.totalpage = await Order.find({
+          _id: query,
+          state:radio
+        }).countDocuments()
+        }
       }else
       {
-        // 获取与查询信息相关的订单数据列表
+        if(radio==="全部")
+        {
+          // 获取与查询信息相关的订单数据列表
         response.data = await Order.find({
           openid: query
         }, {
           __v: 0
-        }).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
+        }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
         // 获取与查询信息相关的管理员数据总数
         response.totalpage = await Order.find({
           openid: query
         }).countDocuments()
+        }
+        else{
+            // 获取与查询信息相关的订单数据列表
+        response.data = await Order.find({
+          openid: query,
+          state:radio
+        }, {
+          __v: 0
+        }).sort({_id: -1}).skip((pagenum - 1) * pagesize).limit(Number(pagesize))
+        // 获取与查询信息相关的管理员数据总数
+        response.totalpage = await Order.find({
+          openid: query,
+          state:radio
+        }).countDocuments()
+        }
       }
     }
   } catch (error) {

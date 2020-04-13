@@ -67,5 +67,8 @@ wx.post('/getCoupon',require("./wx/couponCenters").getCoupon);
 //获取优惠状态
 wx.post('/cheapState',require("./wx/userMessage").cheapState);
 
+//订单状态转换
+wx.post('/changeOrderState',require("./wx/orders").changeOrderState);
+
 // 将路由对象做为模块成员进行导出
 module.exports = wx; 
