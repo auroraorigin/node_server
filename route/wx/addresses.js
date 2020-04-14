@@ -1,5 +1,5 @@
 // 引入jsonwebtoken模块
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken') 
 // 引入秘钥模块
 const keys = require('../../config/key')
 
@@ -15,7 +15,7 @@ module.exports.getAddress = async (req, res) => {
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
             return res.json({
-                "status":"error"
+                "status": "error"
             })
         } else {
             // token验证通过，放行
@@ -32,8 +32,8 @@ module.exports.getAddress = async (req, res) => {
                     });
                 } else {
                     return res.json({
-                        "status":"error",
-                        "message":"还未添加地址"
+                        "status": "error",
+                        "message": "还未添加地址"
                     })
                 }
             })
@@ -48,7 +48,7 @@ module.exports.addressUpdate = async (req, res) => {
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
             return res.json({
-                "status":"error"
+                "status": "error"
             })
         } else {
             // token验证通过，放行
@@ -81,16 +81,19 @@ module.exports.addressUpdate = async (req, res) => {
     })
 }
 
-module.exports.getDefaultAddress = async (req, res) => {
+/*module.exports.getDefaultAddress = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
-    jwt.verify(token, secretOrKey, (err, decode) => {
+    jwt.verify(token, secretOrKey, async (err, decode) => {
         if (err) {
             return res.json({
-                "status":"error"
+                "status": "error"
             })
         } else {
+            //引入部分地区满包邮的价格
+            const ad = await Ad.findOne().then();
+            var discount = ad.discount;
             // token验证通过，放行
             Address.findOne({ openid: decode.openid }, function (err, data) {
                 if (data) {
@@ -98,14 +101,15 @@ module.exports.getDefaultAddress = async (req, res) => {
                     //将获取到的地址返回
                     return res.json({
                         "status": "ok",
-                        "defaultAddress": defaultAddress
+                        "defaultAddress": defaultAddress,
+                        "discount":discount
                     });
                 } else {
                     return res.json({
-                        "status":"error"
+                        "status": "error"
                     })
                 }
             })
         }
     })
-}
+}*/

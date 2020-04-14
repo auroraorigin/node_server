@@ -24,6 +24,11 @@ const {
     Goods
 } = require('../../model/admin/goods.js');
 
+//引入ad集合
+const {
+    Ad
+} = require('../../model/admin/ad.js');
+
 //创建订单
 module.exports.createOrder = async (req, res) => {
     // 判断token是否有效
@@ -35,13 +40,8 @@ module.exports.createOrder = async (req, res) => {
                 "status": "error"
             })
         } else {
-            //如果订单总价格小于100，免邮费
-            if (req.totalPrice < 100)
-                var freight = 0;
-            else
-                var freight = 20;
-            //对应商品减库存
             let goods = JSON.parse(req.body.goods);
+            //对应商品减库存
             for (var i = 0; i < goods.length; i++) {
                 //获取数据库对应id的商品
                 let good = await Goods.findOne({ _id: goods[i]._id });
@@ -67,6 +67,8 @@ module.exports.createOrder = async (req, res) => {
             }
             //如果有使用优惠卷
             if (isObjEmpty(JSON.parse(req.body.coupon)) && stockMessage == "库存减少成功") {
+                //计算订单实付款（包括商品价格+运费-优惠卷）
+                var havedPaid = Number(req.body.totalPrice) + Number(req.body.freight)- JSON.parse(req.body.coupon).money[1];
                 //创建订单文档
                 const order = new Order({
                     openid: decode.openid,
@@ -74,12 +76,13 @@ module.exports.createOrder = async (req, res) => {
                     state: req.body.state,
                     goods: goods,
                     totalPrice: req.body.totalPrice,
-                    freight: freight,
+                    freight: req.body.freight,
                     coupon: JSON.parse(req.body.coupon),
                     createDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     updateDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     timestamp: req.body.timestamp,
-                    userWord: req.body.userWord
+                    userWord: req.body.userWord,
+                    havedPaid: havedPaid
                 });
                 order.save();
                 //删除用户使用的优惠卷
@@ -96,10 +99,10 @@ module.exports.createOrder = async (req, res) => {
                     state: req.body.state,
                     goods: goods,
                     totalPrice: req.body.totalPrice,
-                    freight: freight,
+                    freight: req.body.freight,
                     coupon: order.coupon,
                     _id: order.get("_id"),
-                    createDate:order.createDate
+                    createDate: order.createDate
                 }
                 return res.json({
                     "status": "ok",
@@ -107,6 +110,8 @@ module.exports.createOrder = async (req, res) => {
                     "stockMessage": stockMessage
                 })
             } else if (!isObjEmpty(JSON.parse(req.body.coupon)) && stockMessage == "库存减少成功") {
+                //计算订单实付款（包括商品价格+运费）
+                var havedPaid = Number(req.body.totalPrice) + Number(req.body.freight);
                 //创建订单文档
                 const order = new Order({
                     openid: decode.openid,
@@ -114,11 +119,12 @@ module.exports.createOrder = async (req, res) => {
                     state: req.body.state,
                     goods: goods,
                     totalPrice: req.body.totalPrice,
-                    freight: freight,
+                    freight: req.body.freight,
                     createDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     updateDate: moment().format('YYYY-MM-DD HH:mm:ss'),
                     timestamp: req.body.timestamp,
-                    userWord: req.body.userWord
+                    userWord: req.body.userWord,
+                    havedPaid: havedPaid
                 });
                 order.save();
                 //返回的数据
@@ -127,9 +133,9 @@ module.exports.createOrder = async (req, res) => {
                     state: req.body.state,
                     goods: goods,
                     totalPrice: req.body.totalPrice,
-                    freight: freight,
+                    freight: req.body.freight,
                     _id: order.get("_id"),
-                    createDate:order.createDate
+                    createDate: order.createDate
                 }
                 return res.json({
                     "status": "ok",
@@ -166,7 +172,7 @@ module.exports.getOrder = async (req, res) => {
             //判断传过来的订单状态(1.全部 2.待付款 3.待发货 4.待收货 5.退款)
             if (id == 1) {
                 Order.find({ openid: decode.openid },
-                    "goods state totalPrice freight _id coupon expressNumber returnReason", (err, data) => {
+                    "goods state totalPrice freight _id coupon havedPaid expressNumber returnReason", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
@@ -174,7 +180,7 @@ module.exports.getOrder = async (req, res) => {
                     })
             } else if (id == 2) {
                 Order.find({ openid: decode.openid, state: "待付款" },
-                    "goods state totalPrice freight _id coupon", (err, data) => {
+                    "goods state totalPrice freight _id coupon havedPaid", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
@@ -182,7 +188,7 @@ module.exports.getOrder = async (req, res) => {
                     })
             } else if (id == 3) {
                 Order.find({ openid: decode.openid, state: "待发货" },
-                    "goods state totalPrice freight address _id coupon", (err, data) => {
+                    "goods state totalPrice freight address _id coupon havedPaid", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
@@ -190,7 +196,7 @@ module.exports.getOrder = async (req, res) => {
                     })
             } else if (id == 4) {
                 Order.find({ openid: decode.openid, state: "待收货" },
-                    "goods state totalPrice freight address _id coupon", (err, data) => {
+                    "goods state totalPrice freight address _id coupon havedPaid", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
@@ -198,7 +204,7 @@ module.exports.getOrder = async (req, res) => {
                     })
             } else if (id == 5) {
                 Order.find({ openid: decode.openid, state: "退款中" },
-                    "goods state totalPrice freight address _id coupon expressNumber returnReason", (err, data) => {
+                    "goods state totalPrice freight address _id coupon havedPaid expressNumber returnReason", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
@@ -237,7 +243,8 @@ module.exports.getOrderDetail = async (req, res) => {
                         coupon: data.coupon,
                         expressNumber: data.expressNumber,
                         returnReason: data.returnReason,
-                        createDate:data.createDate
+                        createDate: data.createDate,
+                        havedPaid: data.havedPaid
                     };
                     return res.json({
                         "status": "ok",
@@ -292,9 +299,9 @@ module.exports.changeOrderState = async (req, res) => {
             })
         } else {
             var state = req.body.state;
-            //待付款超时转交易失败
+            //待付款超时转交易关闭
             if (state == "待付款") {
-                Order.updateOne({ _id: req.body._id }, { state: "交易失败" }, (err, data) => {
+                Order.updateOne({ _id: req.body._id }, { state: "交易关闭" }, (err, data) => {
                     return res.json({
                         "status": "ok"
                     })
@@ -310,16 +317,38 @@ module.exports.changeOrderState = async (req, res) => {
                     { state: "退款中", $set: { returnReason: req.body.returnReason } }, (err, data) => {
                         return res.json({
                             "status": "ok",
-                            "createDate":data.createDate
+                            "createDate": data.createDate
                         })
                     })
             } else if (state == "取消退款") {//退款中转待发货或待收货
                 Order.updateOne({ _id: req.body._id }, { state: req.body.toState }, (err, data) => {
                     return res.json({
-                        "status":"ok"
+                        "status": "ok"
                     })
                 })
             }
+        }
+    })
+}
+
+//获取满减金额
+module.exports.getDiscount = async (req, res) => {
+    // 判断token是否有效
+    const token = req.get("Authorization");
+    const secretOrKey = keys.secretOrKey;
+    jwt.verify(token, secretOrKey, async(err, decode) => {
+        if (err) {
+            return res.json({
+                "status": "error"
+            })
+        } else {
+            //引入部分地区满包邮的价格
+            const ad = await Ad.findOne().then();
+            var discount = ad.discount;
+            res.json({
+                "status":"ok",
+                "discount":discount
+            })
         }
     })
 }

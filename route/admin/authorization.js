@@ -26,7 +26,7 @@ module.exports = async (req, res, next) => {
             return res.sendResult(null, 401, '超时')
         } else {
             // token验证通过，判断权限
-            if(decode._id==='5e6eed3a6dbad740f8070550')
+            if(decode._id==='5e955de71695aa14f0d5f7c8')
                 return next()
             const admin = await Admin.findOne({
                 _id: decode._id

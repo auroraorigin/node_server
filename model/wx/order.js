@@ -12,7 +12,7 @@ const orderSchema = new mongoose.Schema({
     },//订单地址
     state:{
         type:String,
-        enum:['待付款','待发货','待收货','退款中','交易成功','交易失败'],
+        enum:['待付款','待发货','待收货','退款中','交易成功','交易关闭'],
         required:true,
     },//订单状态
     goods:{
@@ -38,7 +38,11 @@ const orderSchema = new mongoose.Schema({
     returnReason:{
         type:String,
         maxlength:50
-    }//退款原因
+    },//退款原因
+    havedPaid:{
+        type:String,
+        required:true
+    }//实付款
 });
 
 //创建订单集合

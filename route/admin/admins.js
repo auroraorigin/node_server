@@ -134,6 +134,9 @@ router.put("/:_id/state/:state", async (req, res) => {
         return res.sendResult(null, 400, '参数不合法')
     }
 
+    if(req.params._id==='5e955de71695aa14f0d5f7c8')
+        return res.sendResult(null, 400, '权限不足')
+        
     //修改管理员状态
     const verify = await Admin.updateOne({
         _id: mongoose.Types.ObjectId(req.params._id)
@@ -187,6 +190,9 @@ router.delete("/:_id", async (req, res) => {
         return res.sendResult(null, 400, '参数不合法')
     }
 
+    if(req.params._id==='5e955de71695aa14f0d5f7c8')
+        return res.sendResult(null, 400, '权限不足')
+    
     // 删除管理员
     await Admin.findOneAndDelete({
         _id: req.params

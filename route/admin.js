@@ -26,6 +26,9 @@ admin.post('/login', require('./admin/login'));
 // 获取左侧菜单
 admin.get('/menus', require("./admin/menus"));
 
+// 获取待处理订单信息
+admin.get('/homePage', require("./admin/homePage"));
+
 // 验证用户登录状态模块
 admin.use('/', require("./admin/authorization"));
 
