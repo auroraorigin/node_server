@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 // 连接数据库
 mongoose.set('useCreateIndex', true)
-mongoose.connect('mongodb://localhost/database', {
+mongoose.connect('mongodb://admin:admin3433433@localhost/database', {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})

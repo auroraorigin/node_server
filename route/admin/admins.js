@@ -101,6 +101,7 @@ router.post('/', async (req, res) => {
     try {
         await validateAdmin(req.body)
     } catch (err) {
+        console.log(err)
         return res.sendResult(null, 400, '参数不合法')
     }
 
