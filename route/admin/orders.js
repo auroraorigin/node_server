@@ -20,7 +20,6 @@ function autoComNumber(orderno) {
       // resolve(body)
       // console.log(body.num)
       body = JSON.parse(body)
-      console.log(body)
       if (body.auto.length <= 0) return reject({ status: 501, msg: '无对应的物流公司' })
       resolve({ status: 200, msg: body.auto[0], comCode: body.auto[0].comCode })
     })

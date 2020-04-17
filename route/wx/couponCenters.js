@@ -84,7 +84,7 @@ module.exports.getCoupon = async (req, res) => {
                 }
             })
             if (number == 1) {
-                CouponCenter.deleteOne({ _id: id }).then(result => console.log(result));
+                CouponCenter.deleteOne({ _id: id }).then(result => {});
                 return res.json({
                     "status": "ok",
                     "message": "领取优惠卷成功"

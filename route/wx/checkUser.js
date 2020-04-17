@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
                 User.findOne({ openid: _data.openid }, function (err, data) {
                     //当数据库中查询到openid时，更新token
                     if (data) {
-                        console.log('请求成功，正在签发token')
+                        // console.log('请求成功，正在签发token')
                         //return res.status(200).json(token);
                         return res.json({
                             "status": "ok",
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
                             openid: _data.openid,
                         });
                         user.save();
-                        console.log('没有查询到对应openid，已插入用户信息,并签发token')
+                        // console.log('没有查询到对应openid，已插入用户信息,并签发token')
                         return res.json({
                             "status": "ok",
                             "token": token

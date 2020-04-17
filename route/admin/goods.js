@@ -127,7 +127,6 @@ router.put('/:_id/detail', async (req, res) => {
             urls: nurls
         })
     } catch (error) {
-        console.log(error)
         return res.sendResult(null,400,'参数不合法')
     }
     res.sendResult(null,200,'修改成功')

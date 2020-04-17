@@ -124,7 +124,6 @@ router.put('/:_id', async (req, res) => {
         await validateRole(req.body)
         await validateRole(req.params)
     } catch (err) {
-        console.log(err)
         return res.sendResult(null, 400, '参数不合法')
     }
 

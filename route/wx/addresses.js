@@ -59,7 +59,7 @@ module.exports.addressUpdate = async (req, res) => {
                         addressList: JSON.parse(req.body.addressList),
                         defaultAddress: JSON.parse(req.body.defaultAddress)
                     };
-                    Address.updateOne({ openid: decode.openid }, userAddress).then(result => console.log(result));
+                    Address.updateOne({ openid: decode.openid }, userAddress).then(result => {});
                     return res.json({
                         "status": "ok",
                     });

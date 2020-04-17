@@ -87,7 +87,7 @@ module.exports.messageUpdata = async (req, res) => {
                         wxNumber: req.body.wxNumber,
                         detailAddress: req.body.detailAddress
                     };
-                    User.updateOne({ openid: data.openid }, message).then(result => console.log(result));
+                    User.updateOne({ openid: data.openid }, message).then(result => {});
                     return res.json({
                         "status": "ok",
                     });
