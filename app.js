@@ -10,14 +10,9 @@ const schedule = require('node-schedule');
 const clear = require('./operation/clear')
 // 引入更新订单模块
 const changeOrder = require('./operation/changeOrder')
-// 引入压缩模块
-const compression = require('compression')
 
 // 创建网站服务器
 const app = express();
-
-// 配置GZIP
-app.use(compression())
 
 // 处理post请求参数
 app.use(bodyPaser.json())
