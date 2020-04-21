@@ -55,7 +55,7 @@ wx.post('/getOrder',require("./wx/orders").getOrder);
 //加载订单详情
 wx.post('/getOrderDetail',require("./wx/orders").getOrderDetail);
 
-//删除订单
+//取消订单
 wx.post('/deleteOrder',require("./wx/orders").deleteOrder);
 
 //获取优惠卷中心列表

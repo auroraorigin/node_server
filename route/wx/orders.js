@@ -41,34 +41,63 @@ module.exports.createOrder = async (req, res) => {
             })
         } else {
             let goods = JSON.parse(req.body.goods);
-            //对应商品减库存
-            for (var i = 0; i < goods.length; i++) {
-                //获取数据库对应id的商品
-                let good = await Goods.findOne({ _id: goods[i]._id });
-                var specification = good.specification;
-                var state = good.state;
-                //将库存与商品数量相减
-                var stock = specification[goods[i].specificationIndex].stock - goods[i].buyNumber;
-                //如果商品处于上架状态
-                if (state = true) {
-                    //判断库存是否充分，并设置对应信息
-                    if (stock >= 0) {
-                        specification[goods[i].specificationIndex].stock = stock;
-                        Goods.updateOne({ _id: goods[i]._id }, { specification }).then();
-                        var stockMessage = "库存减少成功";
+            var stateMessage = "商品上架中";
+            var stockMessage = "";
+            if (req.body.state == "待发货") {
+                //对应商品减库存
+                for (var i = 0; i < goods.length; i++) {
+                    //获取数据库对应id的商品
+                    let good = await Goods.findOne({ _id: goods[i]._id });
+                    var specification = good.specification;
+                    var state = good.state;
+                    //将库存与商品数量相减
+                    var stock = specification[goods[i].specificationIndex].stock - goods[i].buyNumber;
+                    //如果商品处于上架状态
+                    if (state == true) {
+                        //判断库存是否充分，并设置对应信息
+                        if (stock >= 0) {
+                            specification[goods[i].specificationIndex].stock = stock;
+                            Goods.updateOne({ _id: goods[i]._id }, { specification }).then();
+                            stockMessage = "库存减少成功";
+                        } else {
+                            stockMessage = "库存不足";
+                            break;
+                        };
+                        stateMessage = "商品上架中"
                     } else {
-                        var stockMessage = "库存不足";
+                        stateMessage = "商品已下架";
                         break;
-                    };
-                    var stateMessage = "商品上架中"
-                } else {
-                    var stateMessage = "商品已下架"
+                    }
+                }
+            } else if (req.body.state = "待付款") {
+                //待付款状态则判断库存是否足够，但不减库存
+                for (var i = 0; i < goods.length; i++) {
+                    //获取数据库对应id的商品
+                    let good = await Goods.findOne({ _id: goods[i]._id });
+                    var specification = good.specification;
+                    var state = good.state;
+                    //将库存与商品数量相减
+                    var stock = specification[goods[i].specificationIndex].stock - goods[i].buyNumber;
+                    //如果商品处于上架状态
+                    if (state == true) {
+                        //判断库存是否充分，并设置对应信息
+                        if (stock >= 0) {
+                            stockMessage = "库存足够";
+                        } else {
+                            stockMessage = "库存不足";
+                            break;
+                        };
+                        stateMessage = "商品上架中"
+                    } else {
+                        stateMessage = "商品已下架";
+                        break;
+                    }
                 }
             }
             //如果有使用优惠卷
-            if (isObjEmpty(JSON.parse(req.body.coupon)) && stockMessage == "库存减少成功") {
+            if (isObjEmpty(JSON.parse(req.body.coupon)) && (stockMessage == "库存减少成功" || stockMessage == "库存足够")) {
                 //计算订单实付款（包括商品价格+运费-优惠卷）
-                var havedPaid = Number(req.body.totalPrice) + Number(req.body.freight)- JSON.parse(req.body.coupon).money[1];
+                var havedPaid = Number(req.body.totalPrice) + Number(req.body.freight) - JSON.parse(req.body.coupon).money[1];
                 //创建订单文档
                 const order = new Order({
                     openid: decode.openid,
@@ -107,9 +136,10 @@ module.exports.createOrder = async (req, res) => {
                 return res.json({
                     "status": "ok",
                     "order": orderData,
-                    "stockMessage": stockMessage
+                    "stockMessage": stockMessage,
+                    "stateMessage": stateMessage
                 })
-            } else if (!isObjEmpty(JSON.parse(req.body.coupon)) && stockMessage == "库存减少成功") {
+            } else if (!isObjEmpty(JSON.parse(req.body.coupon)) && (stockMessage == "库存减少成功" || stockMessage == "库存足够")) {
                 //计算订单实付款（包括商品价格+运费）
                 var havedPaid = Number(req.body.totalPrice) + Number(req.body.freight);
                 //创建订单文档
@@ -140,14 +170,15 @@ module.exports.createOrder = async (req, res) => {
                 return res.json({
                     "status": "ok",
                     "order": orderData,
-                    "stockMessage": stockMessage
+                    "stockMessage": stockMessage,
+                    "stateMessage": stateMessage
                 })
             } else if (stockMessage == "库存不足") {
                 return res.json({
                     "status": "error",
                     "stockMessage": stockMessage
                 })
-            } else if (stateMessage = "商品已下架") {
+            } else if (stateMessage == "商品已下架") {
                 return res.json({
                     "status": "error",
                     "stateMessage": "存在商品下架"
@@ -260,17 +291,36 @@ module.exports.getOrderDetail = async (req, res) => {
     })
 }
 
-//删除订单
+//取消订单
 module.exports.deleteOrder = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
-    jwt.verify(token, secretOrKey, (err, decode) => {
+    jwt.verify(token, secretOrKey, async (err, decode) => {
         if (err) {
             return res.json({
                 "status": "error"
             })
         } else {
+            //获取该订单的优惠卷
+            var order = await Order.findOne({ _id: req.body._id });
+            var orderCoupon = order.coupon;
+            //如果用户使用了优惠卷
+            if (orderCoupon) {
+                //删除该用户的已使用优惠卷标志
+                Coupon.deleteOne({ openid: decode.openid, couponCenterId: orderCoupon.couponCenterId }, (err, data) => { });
+                //将该用户的优惠卷返还给他
+                const coupon = new Coupon({
+                    money: orderCoupon.money,
+                    effective: orderCoupon.effective,
+                    state: orderCoupon.state,
+                    name: orderCoupon.name,
+                    couponCenterId: orderCoupon.couponCenterId,
+                    openid: decode.openid
+                });
+                coupon.save();
+            }
+            //删除该订单
             Order.deleteOne({ _id: req.body._id }, (err, data) => {
                 if (data) {
                     return res.json({
@@ -292,21 +342,88 @@ module.exports.changeOrderState = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
-    jwt.verify(token, secretOrKey, (err, decode) => {
+    jwt.verify(token, secretOrKey, async (err, decode) => {
         if (err) {
             return res.json({
                 "status": "error"
             })
         } else {
             var state = req.body.state;
+            //待付款转待发货
+            if (state == "待付款转待发货") {
+                //获取数据库的该订单数据
+                let order = await Order.findOne({ _id: req.body._id });
+                let goods = order.goods;
+                var stateMessage = "商品上架中";
+                var stockMessage = "";
+                //对应商品减库存
+                for (var i = 0; i < goods.length; i++) {
+                    //获取数据库对应id的商品
+                    let good = await Goods.findOne({ _id: goods[i]._id });
+                    var specification = good.specification;
+                    var state = good.state;
+                    //将库存与商品数量相减
+                    var stock = specification[goods[i].specificationIndex].stock - goods[i].buyNumber;
+                    //如果商品处于上架状态
+                    if (state == true) {
+                        //判断库存是否充分，并设置对应信息
+                        if (stock >= 0) {
+                            specification[goods[i].specificationIndex].stock = stock;
+                            Goods.updateOne({ _id: goods[i]._id }, { specification }).then();
+                            stockMessage = "库存减少成功";
+                        } else {
+                            stockMessage = "库存不足";
+                            break;
+                        };
+                        stateMessage = "商品上架中"
+                    } else {
+                        stateMessage = "商品已下架";
+                        break;
+                    }
+                }
+                if (stockMessage == "库存减少成功" && stateMessage == "商品上架中") {
+                    Order.updateOne({ _id: req.body._id }, { state: "待发货" }, (err, data) => {
+                        return res.json({
+                            "status": "ok",
+                            "stockMessage": stockMessage,
+                            "stateMessage": stateMessage
+                        })
+                    })
+                } else if (stockMessage == "库存不足" || stateMessage == "商品已下架") {
+                    return res.json({
+                        "status": "error",
+                        "stockMessage": stockMessage,
+                        "stateMessage": stateMessage
+                    })
+                }
+            }
             //待付款超时转交易关闭
-            if (state == "待付款") {
+            else if (state == "待付款转交易关闭") {
+                //获取该订单的优惠卷
+                var order = await Order.findOne({ _id: req.body._id });
+                if (order.coupon)
+                    var orderCoupon = order.coupon;
+                //如果用户使用了优惠卷
+                if (orderCoupon) {
+                    //删除该用户的已使用优惠卷标志
+                    Coupon.deleteOne({ openid: decode.openid, couponCenterId: orderCoupon.couponCenterId }, (err, data) => { });
+                    //将该用户的优惠卷返还给他
+                    const coupon = new Coupon({
+                        money: orderCoupon.money,
+                        effective: orderCoupon.effective,
+                        state: orderCoupon.state,
+                        name: orderCoupon.name,
+                        couponCenterId: orderCoupon.couponCenterId,
+                        openid: decode.openid
+                    });
+                    coupon.save();
+                }
                 Order.updateOne({ _id: req.body._id }, { state: "交易关闭" }, (err, data) => {
                     return res.json({
                         "status": "ok"
                     })
                 })
-            } else if (state == "待收货") {//待收货超时转交易成功
+            } else if (state == "待收货转交易成功") {//待收货超时转交易成功
                 Order.updateOne({ _id: req.body._id }, { state: "交易成功" }, (err, data) => {
                     return res.json({
                         "status": "ok"
@@ -336,7 +453,7 @@ module.exports.getDiscount = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
-    jwt.verify(token, secretOrKey, async(err, decode) => {
+    jwt.verify(token, secretOrKey, async (err, decode) => {
         if (err) {
             return res.json({
                 "status": "error"
@@ -346,8 +463,8 @@ module.exports.getDiscount = async (req, res) => {
             const ad = await Ad.findOne().then();
             var discount = ad.discount;
             res.json({
-                "status":"ok",
-                "discount":discount
+                "status": "ok",
+                "discount": discount
             })
         }
     })
