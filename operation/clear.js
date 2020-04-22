@@ -8,6 +8,9 @@ const {
 
 const fs = require("fs");
 const Url = require('../config/url')
+const {
+	Order
+  } = require('../model/wx/order');
 
 module.exports = async ()=>{
 	
@@ -45,6 +48,14 @@ module.exports = async ()=>{
 			arr.push(goods[i].urls[j].split(url)[1])
 		}
 	}
+
+	var order = await Order.find().lean()
+	for (let i = 0; i < order.length; i++) {
+		for (let j = 0; j < order[i].goods.length; j++) {
+			arr.push(order[i].goods[j].url.split(url)[1])		
+		}
+	}
+
 
 	console.log('开始清理无效图片')
 	var sum = 0
