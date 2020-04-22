@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 // 引入秘钥模块
 const keys = require('../../config/key')
 // 路由关键词
-const keyPath = ['admins', 'state', 'role', 'rights', 'roles', 'categories', 'goods', 'detail', 'specification', 'orders', 'kuaidi', 'upload', 'reports', 'ad', 'swiper', 'notice', 'goods', 'floor', 'cate']
+const keyPath = ['admins', 'state', 'role', 'rights', 'roles', 'categories', 'goods', 'detail', 'specification', 'orders', 'kuaidi', 'upload', 'reports', 'ad', 'swiper', 'notice', 'goods', 'floor', 'cate','coupon','discount','detail']
 // 引入管理员集合
 const {
     Admin
@@ -41,7 +41,7 @@ module.exports = async (req, res, next) => {
                 _id: admin.role
             })
             if (!role)
-                return res.sendResult(null, 401, '该账号尚未分配角色')
+                return res.sendResult(null, 401, '权限不足')
 
             // 获取请求路径
             let temp = req.path.split('/')
