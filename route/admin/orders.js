@@ -10,6 +10,10 @@ const mongoose = require('mongoose')
 const {
   Order
 } = require('../../model/wx/order');
+// 引入优惠卷集合
+const {
+  Coupon
+} = require('../../model/wx/coupon.js');
 
 // 自动匹配运单号所属的物流公司
 function autoComNumber(orderno) {
@@ -152,6 +156,26 @@ router.put('/:_id/:operation', async (req, res) => {
         timestamp:time
       })
     } else if (req.params.operation === 'close') {
+
+      //获取该订单的优惠卷
+      var order = await Order.findOne({ _id: req.params._id });
+      var orderCoupon = order.coupon;
+      //如果用户使用了优惠卷
+      if (orderCoupon) {
+          //删除该用户的已使用优惠卷标志
+          Coupon.deleteOne({ openid: order.openid, couponCenterId: orderCoupon.couponCenterId }, (err, data) => {})
+          //将该用户的优惠卷返还给他
+          const coupon = new Coupon({
+              money: orderCoupon.money,
+              effective: orderCoupon.effective,
+              state: orderCoupon.state,
+              name: orderCoupon.name,
+              couponCenterId: orderCoupon.couponCenterId,
+              openid: order.openid
+          });
+          coupon.save();
+      }
+
       await Order.updateOne({
         _id: req.params._id
       }, {

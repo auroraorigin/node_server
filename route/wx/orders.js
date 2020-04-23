@@ -308,7 +308,7 @@ module.exports.deleteOrder = async (req, res) => {
             //如果用户使用了优惠卷
             if (orderCoupon) {
                 //删除该用户的已使用优惠卷标志
-                Coupon.deleteOne({ openid: decode.openid, couponCenterId: orderCoupon.couponCenterId }, (err, data) => { });
+                Coupon.deleteOne({ openid: decode.openid, couponCenterId: orderCoupon.couponCenterId }, (err, data) => {});
                 //将该用户的优惠卷返还给他
                 const coupon = new Coupon({
                     money: orderCoupon.money,

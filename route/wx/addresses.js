@@ -81,7 +81,7 @@ module.exports.addressUpdate = async (req, res) => {
     })
 }
 
-/*module.exports.getDefaultAddress = async (req, res) => {
+module.exports.getDefaultAddress = async (req, res) => {
     // 判断token是否有效
     const token = req.get("Authorization");
     const secretOrKey = keys.secretOrKey;
@@ -91,9 +91,6 @@ module.exports.addressUpdate = async (req, res) => {
                 "status": "error"
             })
         } else {
-            //引入部分地区满包邮的价格
-            const ad = await Ad.findOne().then();
-            var discount = ad.discount;
             // token验证通过，放行
             Address.findOne({ openid: decode.openid }, function (err, data) {
                 if (data) {
@@ -102,7 +99,6 @@ module.exports.addressUpdate = async (req, res) => {
                     return res.json({
                         "status": "ok",
                         "defaultAddress": defaultAddress,
-                        "discount":discount
                     });
                 } else {
                     return res.json({
@@ -112,4 +108,4 @@ module.exports.addressUpdate = async (req, res) => {
             })
         }
     })
-}*/
+}

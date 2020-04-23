@@ -44,7 +44,7 @@ wx.get('/getAddressList', require("./wx/addresses").getAddress);
 wx.put('/saveAddressList', require("./wx/addresses").addressUpdate);
 
 //获取默认地址
-// wx.get('/getDefaultAddress',require("./wx/addresses").getDefaultAddress);
+wx.get('/getDefaultAddress',require("./wx/addresses").getDefaultAddress);
 
 //创建订单
 wx.post('/createOrder',require("./wx/orders").createOrder);

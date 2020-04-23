@@ -55,9 +55,12 @@ module.exports = async (req, res, next) => {
                 method: req.method
             })
             
+            if(!right)
+                return res.sendResult(null, 404, '访问路径不存在')
             if (!role.children.includes(right._id))
                 return res.sendResult(null, 401, '权限不足')
 
+            
             // 认证通过放行
             next();
         }
