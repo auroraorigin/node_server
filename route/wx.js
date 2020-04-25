@@ -28,6 +28,9 @@ wx.get('/cart',require("./wx/cart"))
 // 加载登录校验模块
 wx.post('/checkUser', require('./wx/checkUser'));
 
+// 快递查询
+wx.get('/kuaidi/:expressNumber',require('./wx/kuaidi'))
+
 //加载用户信息模块
 wx.get('/getUserMessage', require("./wx/userMessage").getMessage);
 

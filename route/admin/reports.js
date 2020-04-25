@@ -98,7 +98,6 @@ module.exports = async (req, res) => {
             }
         }
 
-        console.log(poption)
         res.sendResult(poption, 200, '获取成功')
     }
 }
