@@ -203,7 +203,7 @@ module.exports.getOrder = async (req, res) => {
             //判断传过来的订单状态(1.全部 2.待付款 3.待发货 4.待收货 5.退款)
             if (id == 1) {
                 Order.find({ openid: decode.openid },
-                    "goods state totalPrice freight _id coupon havedPaid expressNumber returnReason", { sort: { _id: -1 } }, (err, data) => {
+                    "goods state totalPrice freight _id coupon havedPaid expressNumber returnReason createDate", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
