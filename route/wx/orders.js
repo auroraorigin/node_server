@@ -227,7 +227,7 @@ module.exports.getOrder = async (req, res) => {
                     })
             } else if (id == 4) {
                 Order.find({ openid: decode.openid, state: "待收货" },
-                    "goods state totalPrice freight address _id coupon havedPaid", { sort: { _id: -1 } }, (err, data) => {
+                    "goods state totalPrice freight address _id coupon havedPaid expressNumber createDate", { sort: { _id: -1 } }, (err, data) => {
                         return res.json({
                             "status": "ok",
                             "goods": data
