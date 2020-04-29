@@ -21,22 +21,49 @@ module.exports.getCouponCenter = async (req, res) => {
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
             return res.json({
-                "status":"error"
+                "status": "error"
             })
         } else {
+            var timestamp = Date.parse(new Date());
+            var date = new Date(timestamp);
+            //获取年份  
+            var Y = date.getFullYear();
+            //获取月份  
+            var M = Number((date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1));
+            //获取当日日期 
+            var D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
             CouponCenter.find().select("name effective money number").lean().then(async result => {
                 if (result) {
                     let couponList = result;
                     couponList.forEach(item => {
+                        //isActive表示用户是否已领取优惠卷，false表示未领取，true表示已领取
                         item.isActive = false;
+                        //effectiveState表示是否已到领取日期false表示未到或已过，true表示可以领取
+                        item.effectiveState = true;
+                        //将开始日期年月日分离
+                        var arr = item.effective[0].split(".");
+                        //未到领取日期
+                        if ((Number(arr[0]) > Y) || ((Number(arr[0]) == Y) && (Number(arr[1]) > M)) || ((Number(arr[0]) == Y) && Number(arr[1]) == M &&
+                            Number(arr[2]) > D)) {
+                            item.effectiveState = false
+                        }
+                        //将截至日期年月日分离
+                        var arr1 = item.effective[1].split(".");
+                        //超过领取日期
+                        if ((Number(arr1[0]) < Y) || ((Number(arr1[0]) == Y) && (Number(arr1[1]) < M)) || ((Number(arr1[0]) == Y) && Number(arr1[1]) == M &&
+                            Number(arr1[2]) < D)) {
+                            item.effectiveState = false
+                        }
                     });
                     let coupon = await Coupon.find({ openid: decode.openid });
                     for (var i = 0; i < result.length; i++) {
                         for (var j = 0; j < coupon.length; j++) {
-                            if (result[i]._id==coupon[j].couponCenterId)
-                                couponList[i].isActive = true;
+                            if (result[i]._id == coupon[j].couponCenterId)
+                                if (couponList[i].effective == true)
+                                    couponList[i].isActive = true;
                         }
                     }
+                    console.log(couponList)
                     return res.json({
                         "status": "ok",
                         "couponList": couponList
@@ -60,7 +87,7 @@ module.exports.getCoupon = async (req, res) => {
     jwt.verify(token, secretOrKey, (err, decode) => {
         if (err) {
             return res.json({
-                "status":"error"
+                "status": "error"
             })
         } else {
             //获取传递过来的参数
@@ -72,7 +99,7 @@ module.exports.getCoupon = async (req, res) => {
                         effective: data.effective,
                         state: "可用",
                         name: data.name,
-                        couponCenterId:id,
+                        couponCenterId: id,
                         openid: decode.openid
                     });
                     coupon.save();
@@ -84,7 +111,7 @@ module.exports.getCoupon = async (req, res) => {
                 }
             })
             if (number == 1) {
-                CouponCenter.deleteOne({ _id: id }).then(result => {});
+                CouponCenter.deleteOne({ _id: id }).then(result => { });
                 return res.json({
                     "status": "ok",
                     "message": "领取优惠卷成功"
