@@ -26,14 +26,8 @@ module.exports = async (req, res) => {
     //拿到前台给的code后，发送请求
     if (req.body.code) {
         let options = {
-            method: 'POST',
-            url: 'https://api.weixin.qq.com/sns/jscode2session?',
-            formData: {
-                appid: wx.appid,
-                secret: wx.appsecret,
-                js_code: req.body.code,
-                grant_type: 'authorization_code'
-            }
+            method: 'GET',
+            url: `https://api.weixin.qq.com/sns/jscode2session?appid=${wx.appid}&secret=${wx.appsecret}&js_code=${req.body.code}&grant_type=authorization_code`
         };
         request(options, (error, response, body) => {
             if (error) {
